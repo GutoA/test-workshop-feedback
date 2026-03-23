@@ -4,155 +4,174 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Workshop Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
   :root {
-    --bg: #F7F5F0; --surface: #FFFFFF; --surface2: #F0EDE6;
-    --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.15);
-    --text: #1A1916; --text2: #6B6760; --text3: #A09D98;
-    --accent: #2D5BE3; --accent-light: #E8EDFC;
-    --green: #1D9E75; --green-light: #E1F5EE;
-    --amber: #BA7517; --amber-light: #FAEEDA;
-    --red: #A32D2D; --red-light: #FCEBEB;
-    --blue: #378ADD; --coral: #D85A30;
-    --radius: 12px; --radius-sm: 8px;
+    --navy:#173361; --cyan:#38CCED; --cyan-lt:#E6F9FD; --cyan-mid:#B8EEF9;
+    --bg:#F4F6FA; --surface:#FFFFFF; --surface2:#EDF1F7;
+    --border:rgba(23,51,97,0.10); --border-strong:rgba(23,51,97,0.22);
+    --text:#0D1F3C; --text2:#4A5A74; --text3:#8A97AA;
+    --green:#0E8A5F; --green-lt:#E0F5EC;
+    --amber:#B06B00; --amber-lt:#FEF3DC;
+    --red:#C0302A;   --red-lt:#FDECEB;
+    --radius:14px; --radius-sm:9px;
   }
-  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
   /* ── Lock screen ── */
-  #lockScreen {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem;
-  }
-  .lock-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 360px; text-align: center;
-  }
-  .lock-card h2 { font-family:'DM Serif Display',serif; font-size:1.6rem; font-weight:400; margin-bottom:6px; }
-  .lock-card p  { font-size:13px; color:var(--text2); margin-bottom:1.5rem; }
+  #lockScreen { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem; background:var(--navy); }
+  .lock-card { background:#fff; border-radius:18px; padding:2.5rem 2rem; width:100%; max-width:380px; text-align:center; }
+  .lock-logo { width:56px; height:56px; border-radius:14px; background:var(--navy); display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; }
+  .lock-card h2 { font-size:1.5rem; font-weight:600; color:var(--navy); margin-bottom:6px; }
+  .lock-card p  { font-size:14px; color:var(--text2); margin-bottom:1.5rem; }
   .lock-card input {
-    width:100%; padding:10px 14px; font-family:'DM Sans',sans-serif; font-size:14px;
-    border:1px solid var(--border-strong); border-radius:var(--radius-sm);
-    background:var(--surface); color:var(--text); outline:none; margin-bottom:10px;
-    text-align:center; letter-spacing:0.1em;
-    transition: border-color 0.15s;
+    width:100%; padding:13px 16px; font-family:'Inter',sans-serif; font-size:15px;
+    border:1.5px solid var(--border-strong); border-radius:var(--radius-sm);
+    background:#fff; color:var(--text); outline:none; margin-bottom:12px;
+    text-align:center; letter-spacing:0.12em; transition:border-color 0.15s, box-shadow 0.15s;
   }
-  .lock-card input:focus { border-color: var(--accent); }
+  .lock-card input:focus { border-color:var(--cyan); box-shadow:0 0 0 3px rgba(56,204,237,0.18); }
   .lock-card button {
-    width:100%; padding:10px; background:var(--text); color:#fff; border:none;
-    border-radius:var(--radius-sm); font-family:'DM Sans',sans-serif;
-    font-size:14px; font-weight:500; cursor:pointer; transition:opacity 0.15s;
+    width:100%; padding:13px; background:var(--navy); color:#fff; border:none;
+    border-radius:var(--radius-sm); font-family:'Inter',sans-serif; font-size:15px; font-weight:600;
+    cursor:pointer; transition:background 0.15s;
   }
-  .lock-card button:hover { opacity:0.85; }
-  .lock-error { font-size:12px; color:var(--red); margin-top:8px; display:none; }
+  .lock-card button:hover { background:#0f2447; }
+  .lock-error { font-size:13px; color:var(--red); margin-top:10px; display:none; }
 
   /* ── Dashboard ── */
-  #dashboard { display:none; padding:2rem 1rem 4rem; }
-  .container  { max-width:900px; margin:0 auto; }
-  .dash-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:2.5rem; gap:1rem; }
-  .dash-header h1 { font-family:'DM Serif Display',serif; font-size:2.2rem; font-weight:400; letter-spacing:-0.02em; }
-  .dash-header p  { font-size:13px; color:var(--text2); margin-top:4px; }
-  .header-actions { display:flex; gap:8px; align-items:center; flex-shrink:0; }
-  .btn-sm {
-    padding:7px 14px; font-size:13px; font-family:'DM Sans',sans-serif;
-    border-radius:var(--radius-sm); cursor:pointer; transition:opacity 0.15s, background 0.1s;
-    white-space:nowrap;
-  }
-  .btn-primary { background:var(--text); color:#fff; border:none; }
-  .btn-primary:hover { opacity:0.85; }
-  .btn-outline { background:transparent; color:var(--text2); border:1px solid var(--border-strong); }
-  .btn-outline:hover { background:var(--surface2); }
-  .section-label {
-    font-size:11px; font-weight:500; letter-spacing:0.08em;
-    text-transform:uppercase; color:var(--text3); margin-bottom:12px;
-  }
-  .metrics-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:2rem; }
-  .metric-card { background:var(--surface2); border-radius:var(--radius); padding:1rem 1.25rem; }
-  .metric-card .m-label { font-size:12px; color:var(--text2); margin-bottom:6px; }
-  .metric-card .m-value { font-size:22px; font-weight:500; color:var(--text); }
-  .charts-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:2rem; }
-  .chart-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; }
-  .chart-card h3 { font-size:13px; font-weight:500; color:var(--text2); margin-bottom:1rem; }
-  .chart-wrap { position:relative; height:200px; }
+  #dashboard { display:none; padding:2.5rem 1.5rem 5rem; }
+  .container  { max-width:1100px; margin:0 auto; }
+
+  .dash-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:2.5rem; gap:1rem; padding-bottom:2rem; border-bottom:2px solid var(--cyan); }
+  .dash-header-left { display:flex; align-items:center; gap:18px; }
+  .logo-mark { width:52px; height:52px; border-radius:13px; background:var(--navy); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .dash-header h1 { font-size:1.85rem; font-weight:600; color:var(--navy); letter-spacing:-0.02em; }
+  .dash-header .sub { font-size:14px; color:var(--text2); margin-top:4px; }
+  .header-actions { display:flex; gap:8px; align-items:center; flex-shrink:0; padding-top:6px; }
+  .btn-sm { padding:9px 18px; font-size:13px; font-family:'Inter',sans-serif; font-weight:500; border-radius:var(--radius-sm); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .btn-primary { background:var(--navy); color:#fff; border:none; }
+  .btn-primary:hover { background:#0f2447; }
+  .btn-outline { background:transparent; color:var(--text2); border:1.5px solid var(--border-strong); }
+  .btn-outline:hover { background:var(--surface2); color:var(--navy); }
+
+  .section-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--cyan); margin-bottom:14px; }
+
+  .metrics-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:2rem; }
+  .metric-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem 1.5rem; }
+  .metric-card .m-label { font-size:12px; font-weight:500; color:var(--text3); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em; }
+  .metric-card .m-value { font-size:24px; font-weight:600; color:var(--navy); }
+
+  .charts-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:2rem; }
+  .chart-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; }
+  .chart-card h3 { font-size:13px; font-weight:600; color:var(--text2); margin-bottom:1rem; text-transform:uppercase; letter-spacing:0.06em; }
+  .chart-wrap { position:relative; height:240px; }
+
+  /* Radar legend */
+  .radar-legend { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:12px; }
+  .radar-legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); }
+  .radar-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
   /* Session selector */
   .session-selector { margin-bottom:1.5rem; }
   .selector-chips { display:flex; flex-wrap:wrap; gap:8px; }
   .session-chip {
-    display:inline-flex; align-items:center; gap:6px;
-    padding:6px 14px; background:var(--surface); border:1px solid var(--border-strong);
-    border-radius:999px; font-size:13px; color:var(--text2);
-    cursor:pointer; transition:background 0.12s,border-color 0.12s,color 0.12s; white-space:nowrap;
-    font-family:'DM Sans',sans-serif;
+    display:inline-flex; align-items:center; gap:7px;
+    padding:8px 16px; background:var(--surface); border:1.5px solid var(--border-strong);
+    border-radius:999px; font-size:14px; color:var(--text2); font-weight:500;
+    cursor:pointer; transition:all 0.12s; white-space:nowrap; font-family:'Inter',sans-serif;
   }
-  .session-chip:hover { background:var(--surface2); color:var(--text); }
-  .session-chip.active { background:var(--text); border-color:var(--text); color:#fff; }
+  .session-chip:hover { background:var(--cyan-lt); border-color:var(--cyan); color:var(--navy); }
+  .session-chip.active { background:var(--navy); border-color:var(--navy); color:#fff; }
   .session-chip .chip-count { font-size:11px; opacity:0.6; }
-  .selector-empty { font-size:13px; color:var(--text3); padding:4px 0; }
+  .selector-empty { font-size:14px; color:var(--text3); padding:4px 0; }
 
-  /* Session detail panel */
-  .session-detail { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:2rem; }
-  .session-detail h3 { font-size:15px; font-weight:500; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; }
-  .session-detail h3 button { font-size:12px; color:var(--text3); background:none; border:none; cursor:pointer; padding:2px 6px; border-radius:4px; font-family:'DM Sans',sans-serif; }
-  .session-detail h3 button:hover { background:var(--surface2); color:var(--text); }
-  .detail-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:1rem; }
-  .detail-card { background:var(--surface2); border-radius:var(--radius-sm); padding:0.75rem 1rem; }
-  .detail-card .dc-label { font-size:11px; color:var(--text3); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em; }
-  .detail-card .dc-val   { font-size:20px; font-weight:500; }
-  .detail-card .dc-count { font-size:11px; color:var(--text3); margin-top:2px; }
+  /* Detail panel */
+  .session-detail { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:2rem; }
+  .session-detail .detail-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+  .session-detail .detail-head h3 { font-size:17px; font-weight:600; color:var(--navy); }
+  .session-detail .detail-head button { font-size:13px; color:var(--text3); background:none; border:none; cursor:pointer; padding:4px 8px; border-radius:6px; font-family:'Inter',sans-serif; }
+  .session-detail .detail-head button:hover { background:var(--surface2); color:var(--text); }
+  .detail-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+  .detail-card { background:var(--surface2); border-radius:var(--radius-sm); padding:1rem 1.1rem; }
+  .detail-card .dc-label { font-size:11px; font-weight:600; color:var(--text3); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.06em; }
+  .detail-card .dc-val   { font-size:22px; font-weight:600; color:var(--navy); }
+  .detail-card .dc-count { font-size:12px; color:var(--text3); margin-top:3px; }
 
   /* Table */
   .table-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:2rem; }
-  .table-head { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr; padding:10px 16px; border-bottom:1px solid var(--border); }
-  .table-head span { font-size:11px; font-weight:500; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; }
-  .table-row { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr; padding:11px 16px; border-bottom:1px solid var(--border); align-items:center; cursor:pointer; transition:background 0.1s; }
+  .table-head { display:grid; grid-template-columns:2.5fr 1.4fr 1fr 1fr 1fr 0.8fr 1fr; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--surface2); }
+  .table-head span { font-size:11px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; }
+  .table-row { display:grid; grid-template-columns:2.5fr 1.4fr 1fr 1fr 1fr 0.8fr 1fr; padding:13px 18px; border-bottom:1px solid var(--border); align-items:center; cursor:pointer; transition:background 0.1s; }
   .table-row:last-child { border-bottom:none; }
-  .table-row:hover { background:var(--bg); }
-  .table-row .row-name { font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:8px; }
-  .table-row .row-avg  { font-size:14px; font-weight:500; }
-  .pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:500; }
-  .pill-high { background:var(--green-light); color:var(--green); }
-  .pill-mid  { background:var(--amber-light); color:var(--amber); }
-  .pill-low  { background:var(--red-light);   color:var(--red); }
-  .empty-state { padding:2.5rem; text-align:center; font-size:14px; color:var(--text3); }
+  .table-row:hover { background:var(--cyan-lt); }
+  .table-row .row-name { font-size:14px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:10px; color:var(--navy); }
+  .table-row .row-date { font-size:13px; color:var(--text3); }
+  .table-row .row-avg  { font-size:14px; font-weight:600; color:var(--navy); }
+  .pill { display:inline-block; padding:3px 11px; border-radius:999px; font-size:12px; font-weight:500; }
+  .pill-high { background:var(--green-lt); color:var(--green); }
+  .pill-mid  { background:var(--amber-lt); color:var(--amber); }
+  .pill-low  { background:var(--red-lt);   color:var(--red); }
+  .empty-state { padding:3rem; text-align:center; font-size:15px; color:var(--text3); }
 
-  /* Refresh state */
-  .refresh-btn { display:inline-flex; align-items:center; gap:6px; }
   .spin { display:inline-block; animation:spin 0.8s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
-  @media (max-width:600px) {
+  @media (max-width:700px) {
     .metrics-grid { grid-template-columns:1fr 1fr; }
     .charts-row   { grid-template-columns:1fr; }
     .detail-grid  { grid-template-columns:1fr 1fr; }
     .dash-header  { flex-direction:column; }
+    .table-head, .table-row { grid-template-columns:2fr 1fr 1fr 1fr; }
+    .table-head span:nth-child(2), .table-row .row-date,
+    .table-head span:nth-child(5), .table-row > *:nth-child(5),
+    .table-head span:nth-child(6), .table-row > *:nth-child(6) { display:none; }
   }
 </style>
 </head>
 <body>
 
-<!-- ── Lock screen ── -->
+<!-- Lock screen -->
 <div id="lockScreen">
   <div class="lock-card">
-    <h2>Dashboard</h2>
-    <p>Enter your password to view feedback data.</p>
+    <div class="lock-logo">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="15" r="3.5" fill="#38CCED"/>
+        <path d="M3 15 Q9 8 15 15 Q21 22 27 15" stroke="#38CCED" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <path d="M3 9 Q9 2 15 9 Q21 16 27 9"     stroke="rgba(56,204,237,0.5)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M3 21 Q9 14 15 21 Q21 28 27 21" stroke="rgba(56,204,237,0.5)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h2>Feedback Dashboard</h2>
+    <p>Enter your password to view response data.</p>
     <input type="password" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')unlock()"/>
-    <button onclick="unlock()">Unlock</button>
-    <p class="lock-error" id="lockError">Incorrect password — try again.</p>
+    <button onclick="unlock()">Unlock dashboard</button>
+    <p class="lock-error" id="lockError">Incorrect password — please try again.</p>
   </div>
 </div>
 
-<!-- ── Dashboard ── -->
+<!-- Dashboard -->
 <div id="dashboard">
 <div class="container">
 
   <div class="dash-header">
-    <div>
-      <h1>Workshop Feedback</h1>
-      <p id="lastRefreshed">Loading responses…</p>
+    <div class="dash-header-left">
+      <div class="logo-mark">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="3.5" fill="#38CCED"/>
+          <path d="M3 15 Q9 8 15 15 Q21 22 27 15" stroke="#38CCED" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M3 9 Q9 2 15 9 Q21 16 27 9"     stroke="rgba(56,204,237,0.5)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M3 21 Q9 14 15 21 Q21 28 27 21" stroke="rgba(56,204,237,0.5)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Workshop Feedback</h1>
+        <p class="sub" id="lastRefreshed">Loading…</p>
+      </div>
     </div>
     <div class="header-actions">
-      <button class="btn-sm btn-outline refresh-btn" id="refreshBtn" onclick="loadData()">
+      <button class="btn-sm btn-outline" id="refreshBtn" onclick="loadData()" style="display:inline-flex;align-items:center;gap:6px;">
         <span id="refreshIcon">↻</span> Refresh
       </button>
       <button class="btn-sm btn-outline" onclick="lock()">Lock</button>
@@ -161,7 +180,7 @@
 
   <p class="section-label">Overview</p>
   <div class="metrics-grid">
-    <div class="metric-card"><p class="m-label">Responses</p><p class="m-value" id="mResponses">—</p></div>
+    <div class="metric-card"><p class="m-label">Total responses</p><p class="m-value" id="mResponses">—</p></div>
     <div class="metric-card"><p class="m-label">Average score</p><p class="m-value" id="mAvg">—</p></div>
     <div class="metric-card"><p class="m-label">Overall NPS</p><p class="m-value" id="mNps">—</p></div>
     <div class="metric-card"><p class="m-label">Top dimension</p><p class="m-value" id="mTop">—</p></div>
@@ -173,12 +192,13 @@
       <div class="chart-wrap"><canvas id="barChart"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Score shape (all sessions)</h3>
+      <h3>Score shape by session</h3>
       <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+      <div class="radar-legend" id="radarLegend"></div>
     </div>
   </div>
 
-  <p class="section-label">View session</p>
+  <p class="section-label">View session detail</p>
   <div class="session-selector">
     <div class="selector-chips" id="selectorChips">
       <span class="selector-empty">No responses yet.</span>
@@ -186,34 +206,34 @@
   </div>
 
   <div id="sessionDetailPanel" class="session-detail" style="display:none;">
-    <h3>
-      <span id="detailTitle"></span>
+    <div class="detail-head">
+      <h3 id="detailTitle"></h3>
       <button onclick="clearDetail()">✕ clear</button>
-    </h3>
+    </div>
     <div class="detail-grid">
       <div class="detail-card"><p class="dc-label">Engagement avg</p><p class="dc-val" id="dEng">—</p><p class="dc-count" id="dEngCount"></p></div>
-      <div class="detail-card"><p class="dc-label">Relevancy avg</p><p class="dc-val" id="dRel">—</p><p class="dc-count" id="dRelCount"></p></div>
-      <div class="detail-card"><p class="dc-label">Impact avg</p><p class="dc-val" id="dImp">—</p><p class="dc-count" id="dImpCount"></p></div>
-      <div class="detail-card"><p class="dc-label">Overall avg</p><p class="dc-val" id="dOverall">—</p><p class="dc-count" id="dOverallCount"></p></div>
+      <div class="detail-card"><p class="dc-label">Relevancy avg</p><p class="dc-val"  id="dRel">—</p><p class="dc-count" id="dRelCount"></p></div>
+      <div class="detail-card"><p class="dc-label">Impact avg</p><p class="dc-val"     id="dImp">—</p><p class="dc-count" id="dImpCount"></p></div>
+      <div class="detail-card"><p class="dc-label">Overall avg</p><p class="dc-val"    id="dOverall">—</p><p class="dc-count" id="dOverallCount"></p></div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
       <div>
-        <p style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Score shape</p>
-        <div style="position:relative;height:220px;"><canvas id="detailChart"></canvas></div>
+        <p style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Score shape</p>
+        <div style="position:relative;height:240px;"><canvas id="detailChart"></canvas></div>
       </div>
       <div>
-        <p style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">NPS</p>
-        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">
-          <span style="font-size:42px;font-weight:500;line-height:1;" id="dNpsScore">—</span>
-          <span style="font-size:13px;color:var(--text2);">NPS</span>
-          <span id="dNpsLabel" style="font-size:12px;padding:3px 8px;border-radius:999px;font-weight:500;"></span>
+        <p style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">NPS</p>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:5px;">
+          <span style="font-size:46px;font-weight:600;color:var(--navy);line-height:1;" id="dNpsScore">—</span>
+          <span style="font-size:14px;color:var(--text2);">NPS</span>
+          <span id="dNpsLabel" style="font-size:13px;padding:3px 10px;border-radius:999px;font-weight:500;"></span>
         </div>
-        <p id="dNpsFormula" style="font-size:11px;color:var(--text3);margin-bottom:14px;"></p>
-        <div id="npsBar" style="height:10px;border-radius:999px;background:var(--surface2);margin-bottom:16px;overflow:hidden;">
+        <p id="dNpsFormula" style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.5;"></p>
+        <div style="height:10px;border-radius:999px;background:var(--surface2);margin-bottom:18px;overflow:hidden;">
           <div id="npsBarFill" style="height:100%;border-radius:999px;width:50%;transition:width 0.4s;"></div>
         </div>
-        <div id="npsBuckets" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
-        <p id="npsNote" style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.5;"></p>
+        <div id="npsBuckets" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+        <p id="npsNote" style="font-size:12px;color:var(--text3);margin-top:12px;line-height:1.6;"></p>
       </div>
     </div>
   </div>
@@ -221,9 +241,9 @@
   <p class="section-label">All responses</p>
   <div class="table-card">
     <div class="table-head">
-      <span>Session</span><span>Engagement</span><span>Relevancy</span><span>Impact</span><span>NPS</span><span>Average</span>
+      <span>Session</span><span>Date &amp; time</span><span>Engagement</span><span>Relevancy</span><span>Impact</span><span>NPS</span><span>Average</span>
     </div>
-    <div id="responsesList"><div class="empty-state">No responses yet.</div></div>
+    <div id="responsesList"><div class="empty-state">No responses yet — share the form with participants.</div></div>
   </div>
 
 </div>
@@ -231,11 +251,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-  // ── PASTE YOUR APPS SCRIPT URL HERE ──────────────────────────────────────
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrk_tfo2uk3hP8pLLWOZn8KnKYuXI1OiFNPq12PmEgztayWl1IdwpyugxEN1FiD1Js/exec';
-  // ─────────────────────────────────────────────────────────────────────────
-
   const PASSWORD = 'Testing8642';
+  // Per-session radar palette
+  const RADAR_COLORS = ['#38CCED','#173361','#0E8A5F','#E07B39','#8B5CF6','#E8472A','#B06B00','#C0302A'];
 
   let responses = [];
   let barChart, radarChart, detailChart;
@@ -243,12 +262,10 @@
 
   // ── Auth ──
   function unlock() {
-    const val = document.getElementById('pwInput').value;
-    if (val === PASSWORD) {
+    if (document.getElementById('pwInput').value === PASSWORD) {
       document.getElementById('lockScreen').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
-      initCharts();
-      loadData();
+      initCharts(); loadData();
     } else {
       document.getElementById('lockError').style.display = 'block';
       document.getElementById('pwInput').value = '';
@@ -261,80 +278,82 @@
     document.getElementById('lockError').style.display = 'none';
   }
 
-  // ── Data loading ──
+  // ── Load data ──
   async function loadData() {
     const btn = document.getElementById('refreshBtn');
-    const icon = document.getElementById('refreshIcon');
-    icon.innerHTML = '<span class="spin">↻</span>';
+    document.getElementById('refreshIcon').innerHTML = '<span class="spin">↻</span>';
     btn.disabled = true;
-
     try {
-      const url = APPS_SCRIPT_URL + '?action=get&t=' + Date.now();
-      const res  = await fetch(url);
+      const res  = await fetch(APPS_SCRIPT_URL + '?action=get&t=' + Date.now());
       const data = await res.json();
       responses = data;
       updateAll();
       const now = new Date();
       document.getElementById('lastRefreshed').textContent =
-        `Last refreshed ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · ${responses.length} response${responses.length!==1?'s':''}`;
-    } catch (e) {
-      document.getElementById('lastRefreshed').textContent = 'Could not load data — check your Apps Script URL.';
+        `Last refreshed ${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} · ${responses.length} response${responses.length!==1?'s':''}`;
+    } catch(e) {
+      document.getElementById('lastRefreshed').textContent = 'Could not load — check your Apps Script URL.';
     }
-
-    icon.innerHTML = '↻';
+    document.getElementById('refreshIcon').innerHTML = '↻';
     btn.disabled = false;
   }
 
   // ── Helpers ──
   function avg(arr) { return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+  function pillClass(v) { return v>=8?'pill-high':v>=5?'pill-mid':'pill-low'; }
 
-  function pillClass(v) {
-    return v >= 8 ? 'pill-high' : v >= 5 ? 'pill-mid' : 'pill-low';
+  // Normalise: trim, collapse spaces, lowercase — so punctuation/case differences merge
+  function normalise(s) { return s.trim().toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' '); }
+
+  function groupedSessions() {
+    const map = {};
+    responses.forEach(r => {
+      const key = normalise(r.session);
+      if (!map[key]) map[key] = { displayName: r.session.trim(), entries: [] };
+      map[key].entries.push(r);
+    });
+    return map;
   }
 
   function npsRespondentCategory(v) {
-    if (v >= 9) return { label:'Promoter',  bg:'#E1F5EE', color:'#1D9E75' };
-    if (v >= 7) return { label:'Passive',   bg:'#FAEEDA', color:'#BA7517' };
-    return              { label:'Detractor', bg:'#FCEBEB', color:'#A32D2D' };
+    if (v>=9) return {label:'Promoter', bg:'#E0F5EC',color:'#0E8A5F'};
+    if (v>=7) return {label:'Passive',  bg:'#FEF3DC',color:'#B06B00'};
+    return           {label:'Detractor',bg:'#FDECEB',color:'#C0302A'};
   }
-
   function npsScoreLabel(score) {
-    if (score >= 50) return { label:'Excellent', bg:'#E1F5EE', color:'#1D9E75' };
-    if (score >= 0)  return { label:'Good',      bg:'#FAEEDA', color:'#BA7517' };
-    return                  { label:'Poor',       bg:'#FCEBEB', color:'#A32D2D' };
+    if (score>=50) return {label:'Excellent',bg:'#E0F5EC',color:'#0E8A5F'};
+    if (score>=0)  return {label:'Good',     bg:'#FEF3DC',color:'#B06B00'};
+    return                {label:'Poor',     bg:'#FDECEB',color:'#C0302A'};
   }
-
   function calcNPS(vals) {
-    const total = vals.length;
-    if (!total) return null;
-    const promoters  = vals.filter(v => v >= 9).length;
-    const detractors = vals.filter(v => v <= 6).length;
-    return Math.round((promoters / total - detractors / total) * 100);
+    const t=vals.length; if(!t) return 0;
+    return Math.round((vals.filter(v=>v>=9).length/t - vals.filter(v=>v<=6).length/t)*100);
+  }
+  function formatDateTime(iso) {
+    if (!iso) return '—';
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ' ' +
+             d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    } catch(e) { return iso; }
   }
 
   // ── Selector chips ──
   function renderSelectorChips() {
     const container = document.getElementById('selectorChips');
-    const names = [...new Set(responses.map(r => r.session))];
-    if (!names.length) {
-      container.innerHTML = '<span class="selector-empty">No responses yet.</span>';
-      return;
-    }
-    container.innerHTML = names.map(name => {
-      const count  = responses.filter(r => r.session === name).length;
-      const active = selectedDetail === name ? ' active' : '';
-      return `<button class="session-chip${active}" onclick="selectDetail('${name.replace(/'/g,"\\'")}')">
-        ${name}<span class="chip-count">×${count}</span>
+    const groups = groupedSessions();
+    const keys = Object.keys(groups);
+    if (!keys.length) { container.innerHTML = '<span class="selector-empty">No responses yet.</span>'; return; }
+    container.innerHTML = keys.map(key => {
+      const g = groups[key];
+      const active = selectedDetail === key ? ' active' : '';
+      return `<button class="session-chip${active}" onclick="selectDetail('${key.replace(/'/g,"\\'")}')">
+        ${g.displayName}<span class="chip-count">×${g.entries.length}</span>
       </button>`;
     }).join('');
   }
 
-  function selectDetail(name) {
-    selectedDetail = name;
-    renderSelectorChips();
-    showDetailFor(name);
-  }
-
+  function selectDetail(key) { selectedDetail = key; renderSelectorChips(); showDetailFor(key); }
   function clearDetail() {
     selectedDetail = null;
     document.getElementById('sessionDetailPanel').style.display = 'none';
@@ -342,82 +361,77 @@
     renderSelectorChips();
   }
 
-  // ── Session detail ──
-  function showDetailFor(name) {
-    const m = responses.filter(r => r.session === name);
-    if (!m.length) { clearDetail(); return; }
-
+  // ── Session detail panel ──
+  function showDetailFor(key) {
+    const groups = groupedSessions();
+    const g = groups[key]; if (!g) { clearDetail(); return; }
+    const m = g.entries;
     document.getElementById('sessionDetailPanel').style.display = 'block';
-    document.getElementById('detailTitle').textContent = name;
+    document.getElementById('detailTitle').textContent = g.displayName;
 
-    const engAvg = avg(m.map(r=>r.engagement));
-    const relAvg = avg(m.map(r=>r.relevancy));
-    const impAvg = avg(m.map(r=>r.impact));
+    const engAvg  = avg(m.map(r=>r.engagement));
+    const relAvg  = avg(m.map(r=>r.relevancy));
+    const impAvg  = avg(m.map(r=>r.impact));
     const overall = avg(m.map(r=>(r.engagement+r.relevancy+r.impact)/3));
     const n = m.length;
-    const label = `avg across ${n} response${n>1?'s':''}`;
+    const lbl = `avg across ${n} response${n>1?'s':''}`;
 
     document.getElementById('dEng').textContent     = engAvg.toFixed(1);
     document.getElementById('dRel').textContent     = relAvg.toFixed(1);
     document.getElementById('dImp').textContent     = impAvg.toFixed(1);
     document.getElementById('dOverall').textContent = overall.toFixed(1);
-    ['dEngCount','dRelCount','dImpCount','dOverallCount'].forEach(id =>
-      document.getElementById(id).textContent = label
-    );
+    ['dEngCount','dRelCount','dImpCount','dOverallCount'].forEach(id => document.getElementById(id).textContent = lbl);
 
     if (detailChart) detailChart.destroy();
     detailChart = new Chart(document.getElementById('detailChart'), {
-      type: 'radar',
-      data: {
-        labels: ['Engagement','Relevancy','Impact'],
-        datasets: [{
-          data: [+engAvg.toFixed(1), +relAvg.toFixed(1), +impAvg.toFixed(1)],
-          backgroundColor: 'rgba(55,138,221,0.12)',
-          borderColor: '#378ADD', borderWidth: 2,
-          pointBackgroundColor: ['#378ADD','#1D9E75','#D85A30'],
-          pointRadius: 5, pointHoverRadius: 7
+      type:'radar',
+      data:{
+        labels:['Engagement','Relevancy','Impact'],
+        datasets:[{
+          data:[+engAvg.toFixed(1),+relAvg.toFixed(1),+impAvg.toFixed(1)],
+          backgroundColor:'rgba(56,204,237,0.12)', borderColor:'#38CCED', borderWidth:2.5,
+          pointBackgroundColor:'#173361', pointRadius:5, pointHoverRadius:7
         }]
       },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: { r: {
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{r:{
           min:0, max:10,
-          ticks: { stepSize:2, font:{size:10}, color:'#A09D98', backdropColor:'transparent' },
-          grid: { color:'rgba(0,0,0,0.07)' }, angleLines: { color:'rgba(0,0,0,0.07)' },
-          pointLabels: { font:{size:12,weight:'500'}, color:'#6B6760' }
+          ticks:{stepSize:2,font:{size:11},color:'#8A97AA',backdropColor:'transparent'},
+          grid:{color:'rgba(23,51,97,0.08)'}, angleLines:{color:'rgba(23,51,97,0.08)'},
+          pointLabels:{font:{size:13,weight:'500'},color:'#4A5A74'}
         }}
       }
     });
 
-    const npsVals    = m.map(r => r.nps);
+    const npsVals    = m.map(r=>r.nps);
     const total      = npsVals.length;
-    const promoters  = npsVals.filter(v => v >= 9).length;
-    const passives   = npsVals.filter(v => v >= 7 && v <= 8).length;
-    const detractors = npsVals.filter(v => v <= 6).length;
-    const npsScore   = Math.round((promoters/total - detractors/total) * 100);
+    const promoters  = npsVals.filter(v=>v>=9).length;
+    const passives   = npsVals.filter(v=>v>=7&&v<=8).length;
+    const detractors = npsVals.filter(v=>v<=6).length;
+    const npsScore   = Math.round((promoters/total - detractors/total)*100);
     const sl = npsScoreLabel(npsScore);
 
-    document.getElementById('dNpsScore').textContent = (npsScore >= 0 ? '+' : '') + npsScore;
+    document.getElementById('dNpsScore').textContent = (npsScore>=0?'+':'')+npsScore;
     const labelEl = document.getElementById('dNpsLabel');
-    labelEl.textContent = sl.label; labelEl.style.background = sl.bg; labelEl.style.color = sl.color;
-
+    labelEl.textContent=sl.label; labelEl.style.background=sl.bg; labelEl.style.color=sl.color;
     document.getElementById('dNpsFormula').textContent =
       `${promoters} promoter${promoters!==1?'s':''} (${Math.round(promoters/total*100)}%) − ${detractors} detractor${detractors!==1?'s':''} (${Math.round(detractors/total*100)}%) across ${total} response${total!==1?'s':''}`;
 
     const barPct = ((npsScore+100)/200*100).toFixed(1);
-    const barColor = npsScore>=50?'#1D9E75':npsScore>=0?'#BA7517':'#A32D2D';
+    const barColor = npsScore>=50?'#0E8A5F':npsScore>=0?'#B06B00':'#C0302A';
     document.getElementById('npsBarFill').style.width = barPct+'%';
     document.getElementById('npsBarFill').style.background = barColor;
 
     document.getElementById('npsBuckets').innerHTML = [
-      { label:'Promoters',  count:promoters,  pct:Math.round(promoters/total*100),  bg:'#E1F5EE', color:'#1D9E75', tip:'9–10' },
-      { label:'Passives',   count:passives,   pct:Math.round(passives/total*100),   bg:'#FAEEDA', color:'#BA7517', tip:'7–8'  },
-      { label:'Detractors', count:detractors, pct:Math.round(detractors/total*100), bg:'#FCEBEB', color:'#A32D2D', tip:'0–6'  }
-    ].map(b=>`<div style="background:${b.bg};border-radius:8px;padding:8px 10px;">
-      <p style="font-size:10px;color:${b.color};text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">${b.label} <span style="opacity:.6;">(${b.tip})</span></p>
-      <p style="font-size:20px;font-weight:500;color:${b.color};line-height:1.2;">${b.count}</p>
-      <p style="font-size:11px;color:${b.color};opacity:.7;">${b.pct}%</p>
+      {label:'Promoters', count:promoters,  pct:Math.round(promoters/total*100),  bg:'#E0F5EC',color:'#0E8A5F',tip:'9–10'},
+      {label:'Passives',  count:passives,   pct:Math.round(passives/total*100),   bg:'#FEF3DC',color:'#B06B00',tip:'7–8'},
+      {label:'Detractors',count:detractors, pct:Math.round(detractors/total*100), bg:'#FDECEB',color:'#C0302A',tip:'0–6'}
+    ].map(b=>`<div style="background:${b.bg};border-radius:10px;padding:10px 12px;">
+      <p style="font-size:10px;color:${b.color};text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:3px;">${b.label} <span style="opacity:.6;">(${b.tip})</span></p>
+      <p style="font-size:22px;font-weight:600;color:${b.color};line-height:1.2;">${b.count}</p>
+      <p style="font-size:12px;color:${b.color};opacity:.7;">${b.pct}%</p>
     </div>`).join('');
 
     document.getElementById('npsNote').textContent =
@@ -433,14 +447,14 @@
       ['mAvg','mNps','mTop'].forEach(id => document.getElementById(id).textContent = '—');
     } else {
       const overall = avg(responses.map(r=>(r.engagement+r.relevancy+r.impact)/3));
-      document.getElementById('mAvg').textContent = overall.toFixed(1) + ' / 10';
+      document.getElementById('mAvg').textContent = overall.toFixed(1)+' / 10';
 
       const nps = calcNPS(responses.map(r=>r.nps));
       const sl  = npsScoreLabel(nps);
       document.getElementById('mNps').innerHTML =
-        `<span style="font-size:20px;">${nps>=0?'+':''}${nps}</span>&nbsp;<span style="font-size:12px;padding:2px 7px;border-radius:999px;background:${sl.bg};color:${sl.color};font-weight:500;">${sl.label}</span>`;
+        `<span>${nps>=0?'+':''}${nps}</span>&nbsp;<span style="font-size:12px;padding:2px 8px;border-radius:999px;background:${sl.bg};color:${sl.color};font-weight:500;">${sl.label}</span>`;
 
-      const dimAvgs = [avg(responses.map(r=>r.engagement)), avg(responses.map(r=>r.relevancy)), avg(responses.map(r=>r.impact))];
+      const dimAvgs = [avg(responses.map(r=>r.engagement)),avg(responses.map(r=>r.relevancy)),avg(responses.map(r=>r.impact))];
       document.getElementById('mTop').textContent = ['Engagement','Relevancy','Impact'][dimAvgs.indexOf(Math.max(...dimAvgs))];
     }
 
@@ -450,13 +464,14 @@
     // Table
     const list = document.getElementById('responsesList');
     if (!n) {
-      list.innerHTML = '<div class="empty-state">No responses yet — share the form link with participants.</div>';
+      list.innerHTML = '<div class="empty-state">No responses yet — share the form with participants.</div>';
     } else {
       list.innerHTML = [...responses].reverse().map(r => {
         const a   = ((r.engagement+r.relevancy+r.impact)/3).toFixed(1);
         const cat = npsRespondentCategory(r.nps);
-        return `<div class="table-row" onclick="selectDetail('${r.session.replace(/'/g,"\\'")}')">
+        return `<div class="table-row" onclick="selectDetail('${normalise(r.session).replace(/'/g,"\\'")}')">
           <span class="row-name">${r.session}</span>
+          <span class="row-date">${formatDateTime(r.timestamp)}</span>
           <span><span class="pill ${pillClass(r.engagement)}">${r.engagement}</span></span>
           <span><span class="pill ${pillClass(r.relevancy)}">${r.relevancy}</span></span>
           <span><span class="pill ${pillClass(r.impact)}">${r.impact}</span></span>
@@ -466,48 +481,75 @@
       }).join('');
     }
 
-    // Charts
+    // Bar chart
     const engA = n ? +avg(responses.map(r=>r.engagement)).toFixed(1) : 0;
     const relA = n ? +avg(responses.map(r=>r.relevancy)).toFixed(1)  : 0;
     const impA = n ? +avg(responses.map(r=>r.impact)).toFixed(1)     : 0;
-    barChart.data.datasets[0].data   = [engA, relA, impA];
-    radarChart.data.datasets[0].data = [engA, relA, impA];
+    barChart.data.datasets[0].data = [engA,relA,impA];
     barChart.update();
+
+    // Radar: one dataset per unique session
+    const groups = groupedSessions();
+    const keys   = Object.keys(groups);
+    radarChart.data.datasets = keys.map((key, i) => {
+      const g    = groups[key];
+      const eA   = +avg(g.entries.map(r=>r.engagement)).toFixed(1);
+      const rA   = +avg(g.entries.map(r=>r.relevancy)).toFixed(1);
+      const iA   = +avg(g.entries.map(r=>r.impact)).toFixed(1);
+      const col  = RADAR_COLORS[i % RADAR_COLORS.length];
+      return {
+        label: g.displayName,
+        data: [eA, rA, iA],
+        borderColor: col,
+        backgroundColor: col + '18',
+        borderWidth: 2,
+        pointBackgroundColor: col,
+        pointRadius: 4
+      };
+    });
     radarChart.update();
+
+    // Legend
+    const legend = document.getElementById('radarLegend');
+    legend.innerHTML = keys.map((key, i) => {
+      const col = RADAR_COLORS[i % RADAR_COLORS.length];
+      const name = groups[key].displayName;
+      return `<div class="radar-legend-item">
+        <span class="radar-legend-dot" style="background:${col};"></span>
+        <span>${name}</span>
+      </div>`;
+    }).join('');
   }
 
   // ── Chart init ──
   function initCharts() {
     barChart = new Chart(document.getElementById('barChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Engagement','Relevancy','Impact'],
-        datasets: [{ data:[0,0,0], backgroundColor:['#378ADD','#1D9E75','#D85A30'], borderRadius:6, barThickness:44 }]
+      type:'bar',
+      data:{
+        labels:['Engagement','Relevancy','Impact'],
+        datasets:[{data:[0,0,0],backgroundColor:['#38CCED','#173361','#0E8A5F'],borderRadius:8,barThickness:48}]
       },
-      options: {
+      options:{
         responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
+        plugins:{legend:{display:false}},
         scales:{
-          y:{ min:0, max:10, ticks:{stepSize:2,font:{size:11},color:'#A09D98'}, grid:{color:'rgba(0,0,0,0.05)'}, border:{display:false} },
-          x:{ ticks:{font:{size:12},color:'#6B6760'}, grid:{display:false}, border:{display:false} }
+          y:{min:0,max:10,ticks:{stepSize:2,font:{size:12},color:'#8A97AA'},grid:{color:'rgba(23,51,97,0.05)'},border:{display:false}},
+          x:{ticks:{font:{size:13},color:'#4A5A74'},grid:{display:false},border:{display:false}}
         }
       }
     });
 
     radarChart = new Chart(document.getElementById('radarChart'), {
-      type: 'radar',
-      data: {
-        labels: ['Engagement','Relevancy','Impact'],
-        datasets:[{ data:[0,0,0], backgroundColor:'rgba(55,138,221,0.1)', borderColor:'#378ADD', borderWidth:2, pointBackgroundColor:['#378ADD','#1D9E75','#D85A30'], pointRadius:5 }]
-      },
-      options: {
+      type:'radar',
+      data:{ labels:['Engagement','Relevancy','Impact'], datasets:[] },
+      options:{
         responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
-        scales:{ r:{
+        plugins:{legend:{display:false}},
+        scales:{r:{
           min:0, max:10,
-          ticks:{stepSize:2,font:{size:10},color:'#A09D98',backdropColor:'transparent'},
-          grid:{color:'rgba(0,0,0,0.07)'}, angleLines:{color:'rgba(0,0,0,0.07)'},
-          pointLabels:{font:{size:12,weight:'500'},color:'#6B6760'}
+          ticks:{stepSize:2,font:{size:11},color:'#8A97AA',backdropColor:'transparent'},
+          grid:{color:'rgba(23,51,97,0.07)'}, angleLines:{color:'rgba(23,51,97,0.07)'},
+          pointLabels:{font:{size:13,weight:'500'},color:'#4A5A74'}
         }}
       }
     });
