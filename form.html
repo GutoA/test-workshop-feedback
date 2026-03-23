@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Workshop Feedback</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F7F5F0; --surface: #FFFFFF; --surface2: #F0EDE6;
+    --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.15);
+    --text: #1A1916; --text2: #6B6760; --text3: #A09D98;
+    --accent: #2D5BE3; --accent-light: #E8EDFC;
+    --green: #1D9E75; --green-light: #E1F5EE;
+    --amber: #BA7517; --amber-light: #FAEEDA;
+    --red: #A32D2D; --red-light: #FCEBEB;
+    --blue: #378ADD; --coral: #D85A30;
+    --radius: 12px; --radius-sm: 8px;
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; padding: 2rem 1rem 4rem;
+  }
+  .container { max-width: 560px; margin: 0 auto; }
+  header { margin-bottom: 2.5rem; }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem; font-weight: 400;
+    letter-spacing: -0.02em; margin-bottom: 6px;
+  }
+  header p { font-size: 14px; color: var(--text2); line-height: 1.6; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 10px;
+  }
+  .field { margin-bottom: 1.5rem; }
+  .field label { display: block; font-size: 14px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+  input[type=text], input[type=email] {
+    width: 100%; padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text); outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type=text]:focus, input[type=email]:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--text3); }
+  .slider-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.1rem 1.1rem 0.9rem;
+    margin-bottom: 10px;
+  }
+  .slider-card .dim-label { font-size: 13px; color: var(--text2); margin-bottom: 2px; }
+  .slider-card .dim-desc { font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+  .slider-card .score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .slider-card .score-num { font-size: 26px; font-weight: 500; min-width: 28px; }
+  .slider-card .score-tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    flex: 1; height: 4px; border-radius: 2px; outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px;
+    border-radius: 50%; background: var(--text); cursor: pointer;
+    border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--border-strong);
+    transition: transform 0.1s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.12); }
+  .range-ends { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); }
+  .submit-btn {
+    width: 100%; padding: 13px; margin-top: 0.5rem;
+    background: var(--text); color: #fff; border: none;
+    border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 500; cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .submit-btn:hover { opacity: 0.85; }
+  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .status { margin-top: 1rem; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 14px; display: none; }
+  .status.success { background: var(--green-light); color: var(--green); }
+  .status.error   { background: var(--red-light);   color: var(--red); }
+  .thankyou { display: none; text-align: center; padding: 3rem 1rem; }
+  .thankyou .big { font-family: 'DM Serif Display', serif; font-size: 2rem; font-weight: 400; margin-bottom: 8px; }
+  .thankyou p { font-size: 14px; color: var(--text2); }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Workshop Feedback</h1>
+    <p>Thank you for taking part. Please share a few quick scores — it only takes a minute and helps us improve every session.</p>
+  </header>
+
+  <div id="formWrap">
+    <div class="field">
+      <label>Session name</label>
+      <input type="text" id="sessionName" placeholder="e.g. Introduction to Design Thinking" />
+    </div>
+
+    <hr class="divider"/>
+    <p class="section-label">Your scores (1 = low, 10 = high)</p>
+
+    <div class="slider-card">
+      <p class="dim-label">Engagement</p>
+      <p class="dim-desc">How engaged did you feel throughout the session?</p>
+      <div class="score-row">
+        <span class="score-num" id="engVal">7</span>
+        <input type="range" id="engRange" min="1" max="10" value="7" step="1"
+          oninput="updateSlider('eng',this.value,'#378ADD')"/>
+      </div>
+      <div class="range-ends"><span>1 — not at all</span><span>10 — completely</span></div>
+    </div>
+
+    <div class="slider-card">
+      <p class="dim-label">Relevancy</p>
+      <p class="dim-desc">How relevant was this session to your work or goals?</p>
+      <div class="score-row">
+        <span class="score-num" id="relVal">7</span>
+        <input type="range" id="relRange" min="1" max="10" value="7" step="1"
+          oninput="updateSlider('rel',this.value,'#1D9E75')"/>
+      </div>
+      <div class="range-ends"><span>1 — not at all</span><span>10 — extremely</span></div>
+    </div>
+
+    <div class="slider-card">
+      <p class="dim-label">Impact</p>
+      <p class="dim-desc">How likely is this session to have a positive impact on your practice?</p>
+      <div class="score-row">
+        <span class="score-num" id="impVal">7</span>
+        <input type="range" id="impRange" min="1" max="10" value="7" step="1"
+          oninput="updateSlider('imp',this.value,'#D85A30')"/>
+      </div>
+      <div class="range-ends"><span>1 — unlikely</span><span>10 — very likely</span></div>
+    </div>
+
+    <hr class="divider"/>
+    <p class="section-label">NPS — how likely are you to recommend this session?</p>
+
+    <div class="slider-card">
+      <p class="dim-label">Likelihood to recommend</p>
+      <p class="dim-desc">0 = would not recommend, 10 = would definitely recommend</p>
+      <div class="score-row">
+        <span class="score-num" id="npsVal">7</span>
+        <span class="score-tag" id="npsTag" style="background:#FAEEDA;color:#BA7517;">Passive</span>
+        <input type="range" id="npsRange" min="0" max="10" value="7" step="1"
+          oninput="updateNps(this.value)"/>
+      </div>
+      <div class="range-ends"><span>0 — not at all</span><span>10 — definitely</span></div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">Submit feedback</button>
+    <div class="status" id="statusMsg"></div>
+  </div>
+
+  <div class="thankyou" id="thankyou">
+    <div class="big">Thank you! 🙏</div>
+    <p>Your feedback has been recorded.<br>We really appreciate you taking the time.</p>
+  </div>
+</div>
+
+<script>
+  // ── PASTE YOUR APPS SCRIPT URL HERE ──────────────────────────────────────
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrk_tfo2uk3hP8pLLWOZn8KnKYuXI1OiFNPq12PmEgztayWl1IdwpyugxEN1FiD1Js/exec';
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function updateSlider(id, val, color) {
+    document.getElementById(id+'Val').textContent = val;
+    const el = document.getElementById(id+'Range');
+    const pct = ((val - el.min) / (el.max - el.min)) * 100;
+    el.style.background = `linear-gradient(to right,${color} ${pct}%,#e0ddd8 ${pct}%)`;
+  }
+
+  function updateNps(val) {
+    document.getElementById('npsVal').textContent = val;
+    const v = parseInt(val);
+    const tag = document.getElementById('npsTag');
+    const el  = document.getElementById('npsRange');
+    let color, bg, label;
+    if (v >= 9)      { color='#1D9E75'; bg='#E1F5EE'; label='Promoter'; }
+    else if (v >= 7) { color='#BA7517'; bg='#FAEEDA'; label='Passive'; }
+    else             { color='#A32D2D'; bg='#FCEBEB'; label='Detractor'; }
+    tag.textContent = label; tag.style.color = color; tag.style.background = bg;
+    const pct = (v / 10) * 100;
+    el.style.background = `linear-gradient(to right,${color} ${pct}%,#e0ddd8 ${pct}%)`;
+  }
+
+  function initSliders() {
+    updateSlider('eng', 7, '#378ADD');
+    updateSlider('rel', 7, '#1D9E75');
+    updateSlider('imp', 7, '#D85A30');
+    updateNps(7);
+  }
+
+  async function submitFeedback() {
+    const name = document.getElementById('sessionName').value.trim();
+    if (!name) {
+      showStatus('Please enter the session name before submitting.', 'error');
+      return;
+    }
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const payload = {
+      session:    name,
+      engagement: parseInt(document.getElementById('engRange').value),
+      relevancy:  parseInt(document.getElementById('relRange').value),
+      impact:     parseInt(document.getElementById('impRange').value),
+      nps:        parseInt(document.getElementById('npsRange').value),
+      timestamp:  new Date().toISOString()
+    };
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      // no-cors means we can't read the response, but if no error thrown it worked
+      document.getElementById('formWrap').style.display = 'none';
+      document.getElementById('thankyou').style.display = 'block';
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Submit feedback';
+      showStatus('Something went wrong — please try again.', 'error');
+    }
+  }
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg; el.className = 'status ' + type;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 4000);
+  }
+
+  initSliders();
+</script>
+</body>
+</html>
